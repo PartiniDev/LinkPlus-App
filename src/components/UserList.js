@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
 import { fetchData } from '../utils/api'
@@ -6,9 +7,14 @@ import { fetchData } from '../utils/api'
 ModuleRegistry.registerModules([AllCommunityModule])
 
 function UserList() {
+  const navigate = useNavigate()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+
+  const handleRowClick = (event) => {
+    navigate(`/user/${event.data.id}`)
+  }
 
   const columnDefs = useMemo(
     () => [
@@ -115,6 +121,8 @@ function UserList() {
           pagination={true}
           paginationPageSize={10}
           animateRows={true}
+          onRowClicked={handleRowClick}
+          rowStyle={{ cursor: 'pointer' }}
         />
       </div>
     </div>

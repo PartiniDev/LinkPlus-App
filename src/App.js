@@ -1,11 +1,18 @@
 import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import UserList from './components/UserList'
+import UserDetails from './components/UserDetails'
 
 function App() {
   return (
-    <div className='App'>
-      <UserList />
-    </div>
+    <Router>
+      <div className='App'>
+        <Routes>
+          <Route path='/' element={<UserList />} />
+          <Route path='/user/:id' element={<UserDetails />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
