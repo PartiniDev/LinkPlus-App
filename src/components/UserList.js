@@ -8,6 +8,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
 function UserList() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const columnDefs = useMemo(
     () => [
@@ -36,6 +37,20 @@ function UserList() {
     ],
     []
   )
+
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) {
+      return users
+    }
+
+    return users.filter((user) => {
+      const searchLower = searchTerm.toLowerCase()
+      return (
+        user.name.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower)
+      )
+    })
+  }, [users, searchTerm])
 
   useEffect(() => {
     const getUsers = async () => {
@@ -67,6 +82,26 @@ function UserList() {
     <div className='container-fluid mt-4 px-4'>
       <h2 className='mb-4'>User Management</h2>
 
+      <div className='row mb-3'>
+        <div className='col-md-6 col-lg-4'>
+          <input
+            type='text'
+            className='form-control'
+            placeholder='Search by name or email...'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        {searchTerm && (
+          <div className='col-md-6 col-lg-8 d-flex align-items-center'>
+            <small className='text-muted'>
+              Found {filteredUsers.length} user
+              {filteredUsers.length !== 1 ? 's' : ''}
+            </small>
+          </div>
+        )}
+      </div>
+
       <div
         style={{
           height: '600px',
@@ -75,7 +110,7 @@ function UserList() {
         }}
       >
         <AgGridReact
-          rowData={users}
+          rowData={filteredUsers}
           columnDefs={columnDefs}
           pagination={true}
           paginationPageSize={10}
