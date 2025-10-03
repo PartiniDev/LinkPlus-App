@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { AgGridReact } from 'ag-grid-react'
 import { fetchData } from '../utils/api'
+import AddUserForm from './AddUserForm'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -11,9 +12,15 @@ function UserList() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showAddForm, setShowAddForm] = useState(false)
 
   const handleRowClick = (event) => {
-    navigate(`/user/${event.data.id}`)
+    navigate(`/user/${event.data.id}`, { state: { user: event.data } })
+  }
+
+  const handleAddUser = (newUser) => {
+    setUsers([newUser, ...users])
+    setShowAddForm(false)
   }
 
   const columnDefs = useMemo(
@@ -86,7 +93,21 @@ function UserList() {
 
   return (
     <div className='container-fluid mt-4 px-4'>
-      <h2 className='mb-4'>User Management</h2>
+      <div className='d-flex justify-content-between align-items-center mb-4'>
+        <h2 className='mb-0'>User Management</h2>
+        <button
+          className='btn btn-success'
+          onClick={() => setShowAddForm(true)}
+        >
+          + Add New User
+        </button>
+      </div>
+
+      <AddUserForm
+        show={showAddForm}
+        onAddUser={handleAddUser}
+        onCancel={() => setShowAddForm(false)}
+      />
 
       <div className='row mb-3'>
         <div className='col-md-6 col-lg-4'>
@@ -119,7 +140,7 @@ function UserList() {
           rowData={filteredUsers}
           columnDefs={columnDefs}
           pagination={true}
-          paginationPageSize={10}
+          paginationPageSize={20}
           animateRows={true}
           onRowClicked={handleRowClick}
           rowStyle={{ cursor: 'pointer' }}
